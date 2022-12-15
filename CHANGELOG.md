@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - feat(sumologicschemaprocessor): add nesting processor [#877]
+- feat(sumologicschemaprocessor) allow aggregating attributes with given name patterns [#871]
 
 [Unreleased]: https://github.com/SumoLogic/sumologic-otel-collector/compare/v0.67.0-sumo-0...main
 [#877]: https://github.com/SumoLogic/sumologic-otel-collector/pull/877
+[#871]: https://github.com/SumoLogic/sumologic-otel-collector/pull/871
 
 ## [v0.67.0-sumo-0]
 
