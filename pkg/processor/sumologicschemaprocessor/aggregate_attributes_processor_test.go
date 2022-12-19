@@ -294,3 +294,66 @@ func TestMetrics(t *testing.T) {
 		})
 	}
 }
+
+func TestStringToRegexConvertion(t *testing.T) {
+	testCases := []struct {
+		name     string
+		config   aggregationPair
+		expected []string
+	}{
+		{
+			name: "plain string",
+			config: aggregationPair{
+				Attribute: "",
+				Patterns: []string{
+					"dddddddd",
+				},
+			},
+			expected: []string{"dddddddd"},
+		},
+		{
+			name: "wildcard",
+			config: aggregationPair{
+				Attribute: "",
+				Patterns: []string{
+					"a_*_b",
+				},
+			},
+			expected: []string{"a_(.*)_b"},
+		},
+		{
+			name: "many wildcards",
+			config: aggregationPair{
+				Attribute: "",
+				Patterns: []string{
+					"a_*_b_*_c_*_d",
+				},
+			},
+			expected: []string{"a_(.*)_b_(.*)_c_(.*)_d"},
+		},
+		{
+			name: "escape regex",
+			config: aggregationPair{
+				Attribute: "",
+				Patterns: []string{
+					".+*?()|[]{}^$",
+				},
+			},
+			expected: []string{"\\.\\+(.*)\\?\\(\\)\\|\\[\\]\\{\\}\\^\\$"},
+		},
+	}
+
+	for _, testCase := range testCases {
+		proc, err := newAggregateAttributesProcessor([]aggregationPair{testCase.config})
+		require.NoError(t, err)
+
+		require.Equal(t, 1, len(proc.aggregations))
+		aggr := proc.aggregations[0]
+		expected := testCase.expected
+		require.Equal(t, len(expected), len(aggr.patternRegexes))
+
+		for j := 0; j < len(aggr.patternRegexes); j++ {
+			require.Equal(t, expected[j], aggr.patternRegexes[j].String())
+		}
+	}
+}
